@@ -2,8 +2,8 @@ IOC Type,Value,Source,Confidence,Note
 Hash,450893cb03367159ec00ef2bc0d0fd12bbf4a329b0ef11e7f8dd0e515a5e1fc5,Attachment,High,Phishing login page disguised as OneDrive document - HTML smuggling
 Attachment,OneDrive Doc jose.shtml,Email attachment,High,HTML smuggling - fake Microsoft sign-in page - .shtml extension
 Email,employee-redacted@asiainsurance[.]com[.]pk,From header,High,Compromised legitimate account used to send phishing
-Domain,asiainsurance.com.pk,From header,Medium,Compromised Pakistan insurance company mail server
-IP,210.2.153.132,Received header,Medium,asiainsurance.com.pk mail server - compromised or abused
+Domain,asiainsurance[.]com[.]pk,From header,Medium,Compromised Pakistan insurance company mail server
+IP,210.2.153.132,Received header,Medium,asiainsurance[.]com[.]pk mail server - compromised or abused
 IP,103.102.57.76,Received header,Medium,Origin of attacker connection - navkarnet.net India
 Subject,You have a pending file awaiting your review 12 Dec 2023,Email subject,Medium,OneDrive file-sharing impersonation
 SPF Result,pass,Authentication-Results,Low,SPF pass due to genuine compromised server - NOT exculpatory

@@ -9,11 +9,11 @@
 
 ## 1. Executive Summary
 
-This report documents the analysis of a Microsoft-branded phishing email captured in the Nazario Phishing Corpus sample `phishing-2023` (index 97). The message impersonates a Microsoft "unusual sign-in activity" security alert and lures the recipient to a credential-harvesting landing page hosted on a typosquatted domain (`conect[.]best` — missing the letter `n`). Delivery originated from a rented-hosting IP in the Netherlands (`185.222.58.45`, AS51447 RootLayer Web Services) that has accumulated 169 abuse reports across 60 sources, and the message scored `9.50` on Rspamd. The email is a self-to-self attack (From and To both `jose@monkey[.]org`), the Message-ID is forged to look like it originated inside `monkey[.]org`, and the link contains a `?val=jose@monkey.org` parameter that the operator uses to track which victim clicked. Brand impersonation, display/href URL mismatch, typosquatting, self-to-self envelope, and a complete absence of SPF / DKIM / DMARC authentication together constitute a textbook credential-harvesting phishing campaign consistent with 2023-era Microsoft lures.
+This report documents the analysis of a Microsoft-branded phishing email captured in the Nazario Phishing Corpus sample `phishing-2023` (index 97). The message impersonates a Microsoft "unusual sign-in activity" security alert and lures the recipient to a credential-harvesting landing page hosted on a typosquatted domain (`conect[.]best` — missing the letter `n`). Delivery originated from a rented-hosting IP in the Netherlands (`185.222.58.45`, AS51447 RootLayer Web Services) that has accumulated 169 abuse reports across 60 sources, and the message scored `9.50` on Rspamd. The email is a self-to-self attack (From and To both `jose@monkey[.]org`), the Message-ID is forged to look like it originated inside `monkey[.]org`, and the link contains a `?val=jose@monkey[.]org` parameter that the operator uses to track which victim clicked. Brand impersonation, display/href URL mismatch, typosquatting, self-to-self envelope, and a complete absence of SPF / DKIM / DMARC authentication together constitute a textbook credential-harvesting phishing campaign consistent with 2023-era Microsoft lures.
 
 - **Verdict:** Phishing — Credential Harvesting
 - **Risk Level:** High
-- **Summary:** Unsolicited Microsoft impersonation email delivering a credential-harvesting URL (`hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org`) via a typosquatted domain and an abused rented-hosting IP. The message exhibits every major 2023-era phishing indicator (typosquatting, self-to-self envelope, fabricated Message-ID, no SPF/DKIM/DMARC, victim-tracking parameter, ARC chain from a permissive ESP). User credential loss is the primary impact; Microsoft account takeover, downstream MFA bypass, OAuth-consent fraud, and password-reuse lateral movement are credible second-order risks.
+- **Summary:** Unsolicited Microsoft impersonation email delivering a credential-harvesting URL (`hxxps://online.conect[.]best/configurators.html?val=jose@monkey[.]org`) via a typosquatted domain and an abused rented-hosting IP. The message exhibits every major 2023-era phishing indicator (typosquatting, self-to-self envelope, fabricated Message-ID, no SPF/DKIM/DMARC, victim-tracking parameter, ARC chain from a permissive ESP). User credential loss is the primary impact; Microsoft account takeover, downstream MFA bypass, OAuth-consent fraud, and password-reuse lateral movement are credible second-order risks.
 
 ---
 
@@ -107,11 +107,11 @@ flowchart LR
 | Attribute | Value |
 |-----------|-------|
 | Displayed URL | Microsoft-themed safety page (visually shows a Microsoft-branded account-security page) |
-| Actual href | `hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org` |
+| Actual href | `hxxps://online.conect[.]best/configurators.html?val=jose@monkey[.]org` |
 | URL Shortener Used? | No (direct typosquatted domain) |
 | Domain Similarity | The displayed anchor is a Microsoft-styled page. The actual target is `conect.best` — a **typosquat** of `connect.best` (or, more aggressively, of `connect.microsoft.com`). The letter `n` is missing. |
 | Protocol | HTTPS (TLS) — gives the landing page a "secure" padlock appearance in the browser. The padlock is on the typosquatted domain, not on Microsoft. |
-| Tracking Parameter | `?val=jose@monkey.org` — the operator receives the victim's email address on click-through. The recipient of this self-to-self attack confirms that the attacker is harvesting which specific mailbox was reachable. |
+| Tracking Parameter | `?val=jose@monkey[.]org` — the operator receives the victim's email address on click-through. The recipient of this self-to-self attack confirms that the attacker is harvesting which specific mailbox was reachable. |
 
 **Link Mismatch:**
 
@@ -243,10 +243,10 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 
 | Time (UTC / +0200) | Event | Source / Status |
 |--------------------|-------|-----------------|
-| 2023-05-08 20:49:11 +0200 (= 18:49:11 UTC) | Email composed and submitted from the attacker's client. EHLO `shut-antic.naturescar.com`, From `jose@monkey.org`, Message-ID forged to `<...@monkey.org>`. | Received chain — **observed**. |
+| 2023-05-08 20:49:11 +0200 (= 18:49:11 UTC) | Email composed and submitted from the attacker's client. EHLO `shut-antic.naturescar.com`, From `jose@monkey[.]org`, Message-ID forged to `<...@monkey.org>`. | Received chain — **observed**. |
 | 2023-05-08 18:49:12 UTC (T0 + 1s) | Mail delivered to `imf13.b.hostedemail.com` from `185.222.58.45` (single SMTP hop). | Received chain — **observed**. |
 | 2023-05-08 ~18:49 UTC | Rspamd evaluates the message and assigns score `9.50` (threshold `5.0`). Above-threshold rules include SPF softfail, DKIM none, DMARC none, Reply-Chain hijack, and URL-on-typosquat-domain. | X-Spam-Status header — **observed**. |
-| 2023-05-08 T+ | `\[H\]` Recipient reads email, sees "unusual sign-in from Canada" framing, clicks the Microsoft-themed link, lands on `hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org`. | **Hypothetical — not observed in corpus.** |
+| 2023-05-08 T+ | `\[H\]` Recipient reads email, sees "unusual sign-in from Canada" framing, clicks the Microsoft-themed link, lands on `hxxps://online.conect[.]best/configurators.html?val=jose@monkey[.]org`. | **Hypothetical — not observed in corpus.** |
 | 2023-05-08 T+ | `\[H\]` The `?val=` parameter confirms the recipient's email address to the operator. | **Hypothetical — not observed in corpus.** |
 | 2023-05-08 T+ | `\[H\]` Victim submits Microsoft email + password to the harvest form. | **Hypothetical — not observed in corpus.** |
 | 2023-05-08 T+ | `\[H\]` Stolen credentials used to log in to the real Microsoft account, register an attacker-controlled MFA factor, exfiltrate mailbox data via Graph API, or stage a Business Email Compromise (BEC) pivot. | **Hypothetical — not observed in corpus.** |
@@ -278,9 +278,9 @@ Ranked from strongest to weakest evidence:
 
 1. **Typosquatting domain `conect.best` (missing `n`).** The actual href is `hxxps://online.conect[.]best/...`. The domain is a deliberate misspelling of `connect` — Microsoft does not own or operate `conect.best`. The 9/91 VirusTotal classification is corroborating vendor consensus, not a single-vendor false positive. This single artifact is dispositive.
 2. **SPF softfail + DKIM none + DMARC none.** Three independent authentication mechanisms either fail or are not enforced. The `~all` SPF policy is operationally equivalent to "soft-allow" for the receiving MTA, and the missing DMARC policy removes the only domain-level enforcement lever. This is the structural failure mode of a 2023-era spoof.
-3. **Self-to-self envelope.** From and To are both `jose@monkey.org`. No legitimate Microsoft notification flow is sent to the same address it claims to come from. A self-to-self envelope is consistent with a test send, a target-validated probe, or a misconfigured bulk send — and in all three cases the message is not a legitimate user notification.
+3. **Self-to-self envelope.** From and To are both `jose@monkey[.]org`. No legitimate Microsoft notification flow is sent to the same address it claims to come from. A self-to-self envelope is consistent with a test send, a target-validated probe, or a misconfigured bulk send — and in all three cases the message is not a legitimate user notification.
 4. **Email origin IP `185.222.58.45` (AS51447 RootLayer NL).** The IP is unrelated to both `monkey.org` and Microsoft. It is a rented host on a Netherlands bullet-proof-adjacent network, with 169 AbuseIPDB reports. The origin ASN has no business relationship with either of the impersonated brands.
-5. **`?val=jose@monkey.org` parameter tracks the victim.** The recipient's email is encoded in the click URL. In a bulk send the operator learns which specific address is reachable and active. The use of the recipient's own address in this self-to-self sample confirms the parameter is a per-victim tracking identifier, not a campaign-wide constant.
+5. **`?val=jose@monkey[.]org` parameter tracks the victim.** The recipient's email is encoded in the click URL. In a bulk send the operator learns which specific address is reachable and active. The use of the recipient's own address in this self-to-self sample confirms the parameter is a per-victim tracking identifier, not a campaign-wide constant.
 6. **9/91 VirusTotal vendors flag `conect.best` as phishing.** Multi-vendor consensus (Sophos, BitDefender, G-Data, Webroot, alphaMountain) classifies the domain as phishing. The 9/91 ratio is consistent with a *low-traffic, recent* phishing domain that has not yet been universally ingested.
 7. **Reply-chain hijack (`RE:` prefix).** The subject begins with `RE:`, implying an ongoing conversation. The body is a first-contact lure. This is a deliberate social-engineering attempt to lower the recipient's guard by exploiting the convention that `RE:` means "the human is already in the loop".
 8. **Rspamd spam score `9.50` vs. threshold `5.0`.** ~1.9× threshold. Lower than Case 1 (22.4) because the 2023 lure uses HTTPS and professional formatting that defeat several legacy content rules. The score is still above threshold, but the analyst should not rely on the score alone — the *content* indicators (typosquat, self-to-self, tracking parameter) carry the verdict.
@@ -302,7 +302,7 @@ Ranked from strongest to weakest evidence:
 
 | Factor | Rating | Rationale |
 |--------|--------|-----------|
-| Credential Harvest | **Yes (High)** | Primary payload. The lure exists *only* to capture Microsoft email + password at `hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org`. |
+| Credential Harvest | **Yes (High)** | Primary payload. The lure exists *only* to capture Microsoft email + password at `hxxps://online.conect[.]best/configurators.html?val=jose@monkey[.]org`. |
 | Malware Delivery | No (observed) | No attachment; no drive-by kit on the URL itself beyond a credential form. *Caveat:* the landing page can be re-fetched in 2026; a 2023 victim who had landed on the page would have been exposed to whatever the kit was serving at that time. For this corpus sample, the only observed payload is credential theft. |
 | Persistence | Yes (if victim submitted creds) | Once credentials are captured, the attacker can log in to the real Microsoft account, register an attacker-controlled MFA factor, set up inbox forwarding rules, and abuse OAuth-consent flows. All of these constitute persistence on the identity account. |
 | Lateral Movement Risk | Yes (if victim reused the password) | The email/password pair is almost certainly tried against other services (corporate SSO, banking, personal email). Password reuse is the dominant 2010s–2020s lateral-movement risk. |
@@ -624,7 +624,7 @@ The two cases represent the same threat class — credential-harvesting phishing
 | 2 | **Impersonated brand** | PayPal | Microsoft |
 | 3 | **Lure theme** | Account-security / "conformation code" | "Unusual sign-in activity" (fear + authority) |
 | 4 | **Landing infrastructure** | Raw IPv4 on non-standard port (`217.219.163.3:280`) + mirror (`64.177.76.181`) | Typosquatted domain on a real TLS cert (`online.conect[.]best`) |
-| 5 | **Envelope** | From impersonated brand, To victim | **Self-to-self** (From = To = `jose@monkey.org`) |
+| 5 | **Envelope** | From impersonated brand, To victim | **Self-to-self** (From = To = `jose@monkey[.]org`) |
 | 6 | **Authentication stack** | None — 2005 pre-adoption baseline | SPF `softfail` + DKIM `none` + DMARC `none` — modern triplet absence |
 | 7 | **Spam-engine verdict** | SpamAssassin `22.4` / threshold `5.0` (~4.4×) | Rspamd `9.50` / threshold `5.0` (~1.9×) |
 | 8 | **Subject construction** | Hash-bust tokens (`yqnelz nihi`) + deliberate typos (`Imporant`, `conformation`) | Reply-chain hijack (`RE:`) + brand framing |
