@@ -1,0 +1,12 @@
+IOC Type;Value;Source;Confidence;Note
+IP;217.219.163.3;HTML href;High;Phishing login page - non-standard port 280 - Iran (RIPE)
+IP;64.177.76.181;HTML href;High;Phishing landing page /PayPal/index.htm - US (ARIN)
+IP;12.219.13.159;Received header relay;High;Compromised dynamic residential IP - Spamhaus XBL + SORBS DUL + DSBL listed at delivery
+IP;207.182.82.0;Received header origin;Medium;Apparent origin - /24 network address - possibly forged by spam software
+URL;hxxp://217.219.163[.]3:280/login.html;HTML href;High;Primary credential harvest page
+URL;hxxp://64.177.76[.]181/PayPal/index.htm;HTML href;High;Secondary phishing landing page
+Email;support-team@paypal[.]com;From header;Medium;Spoofed sender - appears to be PayPal support team
+Subject;Imporant information for PayPal Customers conformation code yqnelz nihi;Email subject;Medium;Hash-busting strings + keyword evasion typos
+Message-ID;h$nb17151$4esyoujja$n$fi9@8nm.f9alj;Message-ID header;High;Random pattern - domain 8nm.f9alj not PayPal infrastructure
+Email Header;SpamAssassin score 22.4 (threshold 5.0);X-Spam-Status header;High;17 rules triggered - 5 DNSBLs listed at delivery time
+X-Mailer;eto bila v.43;X-Mailer header;High;Fabricated mail client - not a known legitimate MUA

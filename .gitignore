@@ -1,0 +1,4 @@
+.opencode/
+__pycache__/
+*.pyc
+iocs/iocs-utf-8.csv
