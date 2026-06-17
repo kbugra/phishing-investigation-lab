@@ -1,0 +1,12 @@
+IOC Type,Value,Source,Confidence,Note
+Domain,conect[.]best,HTML href,High,Typosquatted phishing domain — "conect" missing "n" — registrar Sav.com LLC
+Domain,naturescar[.]com,Received header,High,Email origin domain — used for spoofing
+URL,hxxps://online.conect[.]best/configurators.html,HTML href,High,Credential harvest page with email tracking parameter
+IP,185.222.58.45,Received header,High,Email origin — RootLayer Web Services NL — 169 AbuseIPDB reports
+Email,jose@monkey[.]org,From header,Medium,Spoofed sender — self-to-self attack
+Subject,RE:Microsoft account unusual sign-in activity,Email subject,Medium,Fear tactic + reply-chain hijack
+Message-ID,<20230508204911.C853EA17CE7994C1@monkey.org>,Message-ID header,Medium,Forged to match monkey.org
+SPF Result,softfail,Authentication-Results,Medium,~all policy allows spoofing
+DKIM Result,none,Authentication-Results,Medium,Body integrity not verified
+DMARC Result,none,Authentication-Results,High,No DMARC policy — no domain-level enforcement
+Spam Score,9.50 (Rspamd),X-Spam-Status header,Medium,Above threshold but professional formatting evaded higher score

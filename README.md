@@ -6,9 +6,9 @@
 
 ## What I Investigated
 
-- **Case 1:** Historical PayPal Phishing (2005) — raw IP credential harvesting, SpamAssassin analysis, DNSBL enrichment
-- **Case 2:** Modern Microsoft/Office365 Phishing (2023+) — SPF/DKIM/DMARC analysis, domain typosquatting *(planned)*
-- **Case 3:** BEC / Attachment Malware Phishing — hash analysis, sandbox review, MIME inspection *(planned)*
+- **Case 1:** Historical PayPal Phishing (2005) — raw IP credential harvesting, SpamAssassin 22.4, DNSBL enrichment ✅
+- **Case 2:** Modern Microsoft Phishing (2023) — SPF/DKIM/DMARC, domain typosquatting, tracking params ✅
+- **Case 3:** OneDrive Attachment Smuggling (2023) — HTML attachment, compromised account, SPF/DMARC pass ≠ safe ✅
 
 ## Skills Demonstrated
 
@@ -32,6 +32,38 @@
 - **🔧 Tool:** [email_triage_helper.py](tools/email_triage_helper.py) — Python header/IOC parser
 
 **➡️ [View Case 1 Report](reports/phishing_investigation_report_CASE1_FINAL.md)**
+
+### Case 2: Microsoft Unusual Sign-In (2023)
+
+- **📄 Report:** [CASE2_FINAL.md](reports/phishing_investigation_report_CASE2_FINAL.md)
+- **📊 IOCs:** [iocs_case2.csv](iocs/iocs_case2.csv) — 11 indicators including SPF/DKIM/DMARC results
+- **📸 Screenshots:** 9 annotated screenshots (raw headers, parser, VT domain+IP, WHOIS, AbuseIPDB)
+
+| Indicator | Finding |
+|-----------|---------|
+| Typosquatting | conect.best (missing 'n') — 9/91 VT flagged |
+| Auth headers | SPF softfail, DKIM none, DMARC none |
+| Tracking param | ?val=jose@monkey.org in URL |
+| Self-to-self | From and To same address |
+| Verdict | **Phishing — Credential Harvesting** |
+
+**➡️ [View Case 2 Report](reports/phishing_investigation_report_CASE2_FINAL.md)**
+
+### Case 3: OneDrive Attachment Smuggling (2023)
+
+- **📄 Report:** [CASE3_FINAL.md](reports/phishing_investigation_report_CASE3_FINAL.md)
+- **📊 IOCs:** [iocs_case3.csv](iocs/iocs_case3.csv) — 11 indicators including attachment hash
+- **📸 Screenshots:** [screenshots/](screenshots/) — header parser, attachment extraction
+
+| Indicator | Finding |
+|-----------|---------|
+| Attack vector | HTML attachment smuggling (.shtml) — NO links in body |
+| SPF/DMARC | PASS — compromised legitimate server, not exculpatory |
+| Attachment hash | 450893cb... — fake Microsoft login page |
+| Sender | Compromised asiainsurance.com.pk (Pakistan insurance co) |
+| Verdict | **Phishing — Credential Harvesting via HTML Attachment** |
+
+**➡️ [View Case 3 Report](reports/phishing_investigation_report_CASE3_FINAL.md)**
 
 ### Key Findings Snapshot
 
