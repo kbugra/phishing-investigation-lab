@@ -83,9 +83,9 @@ flowchart LR
 
 | Screenshot | Reference |
 |------------|-----------|
-| Raw Header | `screenshots/01_raw_header.png` |
-| Header Parser Output | `screenshots/02_header_parser.png` |
-| Authentication-Results Block | `screenshots/02b_auth_results.png` |
+| Raw Header | `screenshots/case2_01_raw_header.png` |
+| Header Parser Output | `screenshots/case2_02a_header_parser.png` |
+| Header Parser — URLs / Authentication-Results | `screenshots/case2_02b_header_parser_urls.png` |
 
 ---
 
@@ -143,9 +143,8 @@ flowchart LR
 
 | Screenshot | Reference |
 |------------|-----------|
-| Email Body | `screenshots/03_email_body.png` |
-| Link Inspect (display vs href) | `screenshots/04_link_inspect.png` |
-| URLScan landing page | `screenshots/04b_urlscan_conect_best.png` |
+| Email Body (grep view) | `screenshots/case2_03_email_body_grep.png` |
+| Link Inspect (display vs href) | `screenshots/case2_04_link_inspect.png` |
 
 ---
 
@@ -189,7 +188,7 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 
 | Attribute | Value |
 |-----------|-------|
-| Scan URL | `hxxps://online.conect.best` |
+| Scan URL | `hxxps://online.conect[.]best` |
 | Page Type | Credential-harvest page (Microsoft-style) |
 | Final IP | `185.222.58.45` (or current hosting IP) |
 | Screenshot Verdict | Page presents a Microsoft-themed login form; the form posts credentials to the typosquatted domain. |
@@ -231,12 +230,10 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 
 | Screenshot | Reference |
 |------------|-----------|
-| VirusTotal (domain conect.best) | `screenshots/05a_virustotal_conect_best.png` |
-| VirusTotal (IP 185.222.58.45) | `screenshots/05b_virustotal_185_222_58_45.png` |
-| URLScan (online.conect.best) | `screenshots/06_urlscan_conect_best.png` |
-| WHOIS (conect.best) | `screenshots/07a_whois_conect_best.png` |
-| WHOIS / IP (185.222.58.45) | `screenshots/07b_whois_185_222_58_45.png` |
-| AbuseIPDB (185.222.58.45) | `screenshots/08_abuseipdb_185_222_58_45.png` |
+| VirusTotal (domain conect.best) | `screenshots/case2_05a_virustotal_conect.best.png` |
+| VirusTotal (IP 185.222.58.45) | `screenshots/case2_05b_virustotal_185.222.58.45.png` |
+| WHOIS / IP geolocation (conect.best + 185.222.58.45) | `screenshots/case2_07_whois.png` |
+| AbuseIPDB (185.222.58.45) | `screenshots/case2_08_abuseipdb.png` |
 
 ---
 
@@ -249,7 +246,7 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 | 2023-05-08 20:49:11 +0200 (= 18:49:11 UTC) | Email composed and submitted from the attacker's client. EHLO `shut-antic.naturescar.com`, From `jose@monkey.org`, Message-ID forged to `<...@monkey.org>`. | Received chain — **observed**. |
 | 2023-05-08 18:49:12 UTC (T0 + 1s) | Mail delivered to `imf13.b.hostedemail.com` from `185.222.58.45` (single SMTP hop). | Received chain — **observed**. |
 | 2023-05-08 ~18:49 UTC | Rspamd evaluates the message and assigns score `9.50` (threshold `5.0`). Above-threshold rules include SPF softfail, DKIM none, DMARC none, Reply-Chain hijack, and URL-on-typosquat-domain. | X-Spam-Status header — **observed**. |
-| 2023-05-08 T+ | `\[H\]` Recipient reads email, sees "unusual sign-in from Canada" framing, clicks the Microsoft-themed link, lands on `hxxps://online.conect.best/configurators.html?val=jose@monkey.org`. | **Hypothetical — not observed in corpus.** |
+| 2023-05-08 T+ | `\[H\]` Recipient reads email, sees "unusual sign-in from Canada" framing, clicks the Microsoft-themed link, lands on `hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org`. | **Hypothetical — not observed in corpus.** |
 | 2023-05-08 T+ | `\[H\]` The `?val=` parameter confirms the recipient's email address to the operator. | **Hypothetical — not observed in corpus.** |
 | 2023-05-08 T+ | `\[H\]` Victim submits Microsoft email + password to the harvest form. | **Hypothetical — not observed in corpus.** |
 | 2023-05-08 T+ | `\[H\]` Stolen credentials used to log in to the real Microsoft account, register an attacker-controlled MFA factor, exfiltrate mailbox data via Graph API, or stage a Business Email Compromise (BEC) pivot. | **Hypothetical — not observed in corpus.** |
@@ -263,7 +260,7 @@ timeline
     2023-05-08 18:49:12 UTC : Delivered to imf13.b.hostedemail.com (single hop)
     2023-05-08 18:49 UTC : Rspamd scores 9.50 (threshold 5.0)
     2023-05-08 18:49 UTC : [Hypothetical] User clicks Microsoft-themed anchor
-    2023-05-08 18:49 UTC : [Hypothetical] Landed on conect.best/configurators.html?val=jose@monkey.org
+    2023-05-08 18:49 UTC : [Hypothetical] Landed on conect[.]best/configurators.html?val=jose@monkey.org
     2023-05-08 18:49 UTC : [Hypothetical] ?val= confirms victim address to operator
     2023-05-08 18:49 UTC : [Hypothetical] Credentials submitted to harvest form
     2023-05-08 18:49 UTC : [Hypothetical] Account takeover / OAuth-consent fraud / BEC pivot
@@ -279,7 +276,7 @@ timeline
 
 Ranked from strongest to weakest evidence:
 
-1. **Typosquatting domain `conect.best` (missing `n`).** The actual href is `hxxps://online.conect.best/...`. The domain is a deliberate misspelling of `connect` — Microsoft does not own or operate `conect.best`. The 9/91 VirusTotal classification is corroborating vendor consensus, not a single-vendor false positive. This single artifact is dispositive.
+1. **Typosquatting domain `conect.best` (missing `n`).** The actual href is `hxxps://online.conect[.]best/...`. The domain is a deliberate misspelling of `connect` — Microsoft does not own or operate `conect.best`. The 9/91 VirusTotal classification is corroborating vendor consensus, not a single-vendor false positive. This single artifact is dispositive.
 2. **SPF softfail + DKIM none + DMARC none.** Three independent authentication mechanisms either fail or are not enforced. The `~all` SPF policy is operationally equivalent to "soft-allow" for the receiving MTA, and the missing DMARC policy removes the only domain-level enforcement lever. This is the structural failure mode of a 2023-era spoof.
 3. **Self-to-self envelope.** From and To are both `jose@monkey.org`. No legitimate Microsoft notification flow is sent to the same address it claims to come from. A self-to-self envelope is consistent with a test send, a target-validated probe, or a misconfigured bulk send — and in all three cases the message is not a legitimate user notification.
 4. **Email origin IP `185.222.58.45` (AS51447 RootLayer NL).** The IP is unrelated to both `monkey.org` and Microsoft. It is a rented host on a Netherlands bullet-proof-adjacent network, with 169 AbuseIPDB reports. The origin ASN has no business relationship with either of the impersonated brands.
@@ -305,7 +302,7 @@ Ranked from strongest to weakest evidence:
 
 | Factor | Rating | Rationale |
 |--------|--------|-----------|
-| Credential Harvest | **Yes (High)** | Primary payload. The lure exists *only* to capture Microsoft email + password at `hxxps://online.conect.best/configurators.html?val=jose@monkey.org`. |
+| Credential Harvest | **Yes (High)** | Primary payload. The lure exists *only* to capture Microsoft email + password at `hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org`. |
 | Malware Delivery | No (observed) | No attachment; no drive-by kit on the URL itself beyond a credential form. *Caveat:* the landing page can be re-fetched in 2026; a 2023 victim who had landed on the page would have been exposed to whatever the kit was serving at that time. For this corpus sample, the only observed payload is credential theft. |
 | Persistence | Yes (if victim submitted creds) | Once credentials are captured, the attacker can log in to the real Microsoft account, register an attacker-controlled MFA factor, set up inbox forwarding rules, and abuse OAuth-consent flows. All of these constitute persistence on the identity account. |
 | Lateral Movement Risk | Yes (if victim reused the password) | The email/password pair is almost certainly tried against other services (corporate SSO, banking, personal email). Password reuse is the dominant 2010s–2020s lateral-movement risk. |
@@ -319,7 +316,7 @@ Ranked from strongest to weakest evidence:
 ```mermaid
 flowchart TD
     A["Email received<br/>(Nazario Corpus 2023-05-08)"] --> B{"Brand impersonation?<br/>(Subject: 'RE:Microsoft account unusual sign-in activity')"}
-    B -- Yes --> C{"Credential-harvest URL?<br/>(href = online.conect.best/configurators.html)"}
+    B -- Yes --> C{"Credential-harvest URL?<br/>(href = online.conect[.]best/configurators.html)"}
     C -- Yes --> D{"Typosquat?<br/>(conect.best — missing 'n')"}
     D -- Yes --> E{"Authentication stack?<br/>(SPF softfail + DKIM none + DMARC none)"}
     E -- All fail / none --> F{"Envelope?<br/>(self-to-self: From=To=jose@monkey.org)"}
@@ -349,8 +346,8 @@ naturescar.com
 
 **URLs (defanged — reconstruct only inside isolation):**
 ```
-hxxps://online.conect.best/configurators.html
-hxxps://online.conect.best/configurators.html?val=jose@monkey.org
+hxxps://online.conect[.]best/configurators.html
+hxxps://online.conect[.]best/configurators.html?val=jose@monkey.org
 ```
 
 **IPs:**
@@ -454,7 +451,7 @@ EmailEvents
 ```kql
 let phish_ips = dynamic(["185.222.58.45"]);
 let phish_domains = dynamic(["conect.best","naturescar.com"]);
-let phish_urls = dynamic(["hxxps://online.conect.best/configurators.html"]);
+let phish_urls = dynamic(["hxxps://online.conect[.]best/configurators.html"]);
 union isfuzzy=true
     (DnsEvents  | where Name in (phish_urls) or IpAddress in (phish_ips)),
     (W3CIISLog  | where csHost in (phish_urls) or cIP in (phish_ips)),
@@ -477,14 +474,14 @@ event.category:"email" AND (
 ```lucene
 (event.category:("dns" OR "web" OR "network") AND (
   destination.ip:"185.222.58.45" OR
-  url.full:("hxxps://online.conect.best/*") OR
-  url.full:(*conect.best*)
+  url.full:("hxxps://online.conect[.]best/*") OR
+  url.full:(*conect[.]best*)
 ))
 ```
 
 ### 9.5 Threat Intelligence Sharing
 
-- [ ] Submit the defanged URL `hxxps://online.conect.best/configurators.html` to URLhaus (`https://urlhaus.abuse.ch/`).
+- [ ] Submit the defanged URL `hxxps://online.conect[.]best/configurators.html` to URLhaus (`https://urlhaus.abuse.ch/`).
 - [ ] Submit the typosquatted domain `conect.best` to PhishTank (`https://phishtank.org/`).
 - [ ] Submit the origin IP `185.222.58.45` to AbuseIPDB (with full abuse-report detail).
 - [ ] Submit the `?val=`-tracking pattern to internal TI platform as a kit-signature IOC.
@@ -545,9 +542,9 @@ Selected triggered rules (illustrative):
 **B.2 URLScan landing-page snapshot:**
 
 ```
-URL     : hxxps://online.conect.best
+URL     : hxxps://online.conect[.]best
 Page    : Microsoft-themed account-security page
-Form    : posts to hxxps://online.conect.best/configurators.html
+Form    : posts to hxxps://online.conect[.]best/configurators.html
           with hidden field ?val=<recipient-address>
 TLS     : valid certificate for conect.best (Let's Encrypt or equivalent)
 Verdict : Phishing — credential harvest
@@ -586,18 +583,15 @@ Hostname : customer-rental.rootlayer.net
 
 | # | File | Description |
 |---|------|-------------|
-| 1 | `screenshots/01_raw_header.png` | Raw email header view in mail client. |
-| 2 | `screenshots/02_header_parser.png` | Google Admin Toolbox / MXToolbox header parser output. |
-| 3 | `screenshots/02b_auth_results.png` | Authentication-Results block (SPF softfail / DKIM none / DMARC none). |
-| 4 | `screenshots/03_email_body.png` | Email body rendered in mail client (HTML, Microsoft-themed). |
-| 5 | `screenshots/04_link_inspect.png` | "View source" / "Inspect link" showing display vs. href mismatch. |
-| 6 | `screenshots/04b_urlscan_conect_best.png` | URLScan result for the typosquatted landing page. |
-| 7 | `screenshots/05a_virustotal_conect_best.png` | VirusTotal lookup for the typosquatted domain (9/91). |
-| 8 | `screenshots/05b_virustotal_185_222_58_45.png` | VirusTotal lookup for the origin IP. |
-| 9 | `screenshots/06_urlscan_conect_best.png` | URLScan full-page screenshot of the landing page. |
-| 10 | `screenshots/07a_whois_conect_best.png` | WHOIS for `conect.best` (Sav.com LLC, created ~2023). |
-| 11 | `screenshots/07b_whois_185_222_58_45.png` | WHOIS / IP allocation for `185.222.58.45` (RootLayer NL). |
-| 12 | `screenshots/08_abuseipdb.png` | AbuseIPDB lookup for `185.222.58.45` (169/60). |
+| 1 | `screenshots/case2_01_raw_header.png` | Raw email header view in mail client. |
+| 2 | `screenshots/case2_02a_header_parser.png` | Google Admin Toolbox / MXToolbox header parser output. |
+| 3 | `screenshots/case2_02b_header_parser_urls.png` | Header parser — URLs / Authentication-Results block (SPF softfail / DKIM none / DMARC none). |
+| 4 | `screenshots/case2_03_email_body_grep.png` | Email body rendered in mail client (HTML, Microsoft-themed), grep-extracted for IOCs. |
+| 5 | `screenshots/case2_04_link_inspect.png` | "View source" / "Inspect link" showing display vs. href mismatch. |
+| 6 | `screenshots/case2_05a_virustotal_conect.best.png` | VirusTotal lookup for the typosquatted domain (9/91). |
+| 7 | `screenshots/case2_05b_virustotal_185.222.58.45.png` | VirusTotal lookup for the origin IP. |
+| 8 | `screenshots/case2_07_whois.png` | WHOIS / IP allocation for `conect.best` (Sav.com LLC) and `185.222.58.45` (RootLayer NL). |
+| 9 | `screenshots/case2_08_abuseipdb.png` | AbuseIPDB lookup for `185.222.58.45` (169/60). |
 
 ### D. References
 
@@ -629,7 +623,7 @@ The two cases represent the same threat class — credential-harvesting phishing
 | 1 | **Era / Corpus sample** | 2005 — `samples/20051114.mbox` | 2023 — `phishing-2023` (index 97) |
 | 2 | **Impersonated brand** | PayPal | Microsoft |
 | 3 | **Lure theme** | Account-security / "conformation code" | "Unusual sign-in activity" (fear + authority) |
-| 4 | **Landing infrastructure** | Raw IPv4 on non-standard port (`217.219.163.3:280`) + mirror (`64.177.76.181`) | Typosquatted domain on a real TLS cert (`online.conect.best`) |
+| 4 | **Landing infrastructure** | Raw IPv4 on non-standard port (`217.219.163.3:280`) + mirror (`64.177.76.181`) | Typosquatted domain on a real TLS cert (`online.conect[.]best`) |
 | 5 | **Envelope** | From impersonated brand, To victim | **Self-to-self** (From = To = `jose@monkey.org`) |
 | 6 | **Authentication stack** | None — 2005 pre-adoption baseline | SPF `softfail` + DKIM `none` + DMARC `none` — modern triplet absence |
 | 7 | **Spam-engine verdict** | SpamAssassin `22.4` / threshold `5.0` (~4.4×) | Rspamd `9.50` / threshold `5.0` (~1.9×) |

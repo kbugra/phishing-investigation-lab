@@ -41,9 +41,9 @@
 
 | Indicator | Finding |
 |-----------|---------|
-| Typosquatting | conect.best (missing 'n') — 9/91 VT flagged |
+| Typosquatting | conect[.]best (missing 'n') — 9/91 VT flagged |
 | Auth headers | SPF softfail, DKIM none, DMARC none |
-| Tracking param | ?val=jose@monkey.org in URL |
+| Tracking param | ?val=jose@monkey[.]org in URL |
 | Self-to-self | From and To same address |
 | Verdict | **Phishing — Credential Harvesting** |
 
@@ -60,7 +60,7 @@
 | Attack vector | HTML attachment smuggling (.shtml) — NO links in body |
 | SPF/DMARC | PASS — compromised legitimate server, not exculpatory |
 | Attachment hash | 450893cb... — fake Microsoft login page |
-| Sender | Compromised asiainsurance.com.pk (Pakistan insurance co) |
+| Sender | Compromised asiainsurance[.]com[.]pk (Pakistan insurance co) |
 | Verdict | **Phishing — Credential Harvesting via HTML Attachment** |
 
 **➡️ [View Case 3 Report](reports/phishing_investigation_report_CASE3_FINAL.md)**

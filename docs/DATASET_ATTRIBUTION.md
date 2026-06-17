@@ -22,7 +22,8 @@ All phishing email samples analyzed in this project originate from the
 | File | Size | Case Study |
 |------|------|------------|
 | `20051114.mbox` | 3.9 MB | Case 1 — Historical PayPal Phishing (2005) |
-| `phishing-2023.mbox` | 7.4 MB | Case 2 — Modern Phishing (planned) |
+| `phishing-2023.mbox` | 7.4 MB | Case 2 — Microsoft Unusual Sign-In (2023) |
+| `phishing-2023.mbox` | 7.4 MB | Case 3 — OneDrive Attachment Smuggling (2023) |
 
 No original .mbox or .eml files are included in this repository.
 

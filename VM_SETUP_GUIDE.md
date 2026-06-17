@@ -67,7 +67,7 @@ pip3 install mailbox
 
 **Yöntem 1 — Read-only Shared Folder (güvenli):**
 1. VM ayarları → Shared Folders → Add
-2. Folder: Host'taki `G:\yeni indir\Projeler\phishing` klasörü
+2. Folder: Host'taki `<repo-root>` klasörü
 3. Read-only işaretle, Auto-mount aç
 4. VM içinde `/media/sf_phishing/` yolunda görünür
 

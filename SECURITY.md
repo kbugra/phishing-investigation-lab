@@ -16,6 +16,7 @@ It contains:
 - No .eml sample files (samples are only processed inside an isolated VM)
 - No malware, exploits, or attack tools
 - No real victim PII — all recipient addresses are from public research corpora
+- (Sender email addresses from the Nazario corpus have been redacted in public documentation.)
 
 ## Safe Usage
 

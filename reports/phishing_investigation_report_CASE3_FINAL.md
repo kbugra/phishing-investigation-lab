@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-This report documents the analysis of a OneDrive-branded phishing email captured in the Nazario Phishing Corpus sample `phishing-2023` (index 399). Unlike the link-delivery phishing of Cases 1 and 2, this message uses **HTML attachment smuggling**: the entire phishing payload — a fake Microsoft sign-in page — is delivered as an `.shtml` attachment rather than as a link in the message body. There are no URLs in the email body, which means URL-based mail filters and user click-through telemetry both miss the lure. The sender is a **compromised legitimate account** (`younus.shaheen@asiainsurance.com.pk`, a Pakistan insurance company), so the message passes SPF and DMARC. **Passing authentication is not exculpatory** in this case — the message originated from a genuinely abused mail server, not from a spoofed sender. The attachment is a 35,453-byte HTML file (SHA256 `450893cb…`) that mimics a Microsoft account sign-in page using real Microsoft CDN resources (`aadcdn.msftauth.net`) for authentic appearance. The attachment filename (`OneDrive Doc jose.shtml`) embeds the recipient's name — a targeted, not bulk, lure. HTML attachment smuggling, generic-MIME evasion, double-extension abuse, real-CDN trust-borrowing, and authentication-pass-via-compromise together constitute a textbook 2023-era "bypass the link-scanner" phishing campaign.
+This report documents the analysis of a OneDrive-branded phishing email captured in the Nazario Phishing Corpus sample `phishing-2023` (index 399). Unlike the link-delivery phishing of Cases 1 and 2, this message uses **HTML attachment smuggling**: the entire phishing payload — a fake Microsoft sign-in page — is delivered as an `.shtml` attachment rather than as a link in the message body. There are no URLs in the email body, which means URL-based mail filters and user click-through telemetry both miss the lure. The sender is a **compromised legitimate account** (`employee-redacted@asiainsurance[.]com[.]pk`, a Pakistan insurance company), so the message passes SPF and DMARC. **Passing authentication is not exculpatory** in this case — the message originated from a genuinely abused mail server, not from a spoofed sender. The attachment is a 35,453-byte HTML file (SHA256 `450893cb…`) that mimics a Microsoft account sign-in page using real Microsoft CDN resources (`aadcdn.msftauth.net`) for authentic appearance. The attachment filename (`OneDrive Doc jose.shtml`) embeds the recipient's name — a targeted, not bulk, lure. HTML attachment smuggling, generic-MIME evasion, double-extension abuse, real-CDN trust-borrowing, and authentication-pass-via-compromise together constitute a textbook 2023-era "bypass the link-scanner" phishing campaign.
 
 - **Verdict:** Phishing — Credential Harvesting via HTML Attachment Smuggling
 - **Risk Level:** High
@@ -25,7 +25,7 @@ This report documents the analysis of a OneDrive-branded phishing email captured
 | **Analyst** | KBugra |
 | **Source** | Nazario Phishing Corpus — `phishing-2023` (index 399) |
 | **Email Subject** | `You have a pending file awaiting your review 12 Dec 2023` |
-| **Sender (From)** | `"OneDrive_monkey.org" <younus.shaheen@asiainsurance.com.pk>` |
+| **Sender (From)** | `"OneDrive_monkey.org" <employee-redacted@asiainsurance[.]com[.]pk>` |
 | **Recipient (To)** | `jose@monkey.org` |
 | **Reply-To** | N/A |
 | **Date Sent** | Tue, 12 Dec 2023 22:36:25 +0530 |
@@ -40,10 +40,10 @@ This report documents the analysis of a OneDrive-branded phishing email captured
 
 | Header | Value | Notes |
 |--------|-------|-------|
-| From | `"OneDrive_monkey.org" <younus.shaheen@asiainsurance.com.pk>` | Display name **fakes internal origin** by appending the recipient's domain (`monkey.org`). The real sender domain is `asiainsurance.com.pk` — a Pakistan insurance company with no business relationship to the recipient. |
+| From | `"OneDrive_monkey.org" <employee-redacted@asiainsurance[.]com[.]pk>` | Display name **fakes internal origin** by appending the recipient's domain (`monkey.org`). The real sender domain is `asiainsurance.com.pk` — a Pakistan insurance company with no business relationship to the recipient. |
 | To | `jose@monkey.org` | Recipient. Note the **targeted filename** (`OneDrive Doc jose.shtml`) — the attacker knows the recipient's name. |
 | Subject | `You have a pending file awaiting your review 12 Dec 2023` | Low-urgency, business-like framing. Impersonates a OneDrive file-sharing notification. Includes the date in the subject to reinforce the "pending file" pretext. |
-| Return-Path | `prvs=17102a4352=younus.shaheen@asiainsurance.com.pk` | The `prvs=` prefix is a **sender-rewriting scheme (SRS) signature** applied by an intermediate relay — the bounce-handling address differs slightly from the From header. SRS is used to preserve SPF alignment when forwarding. |
+| Return-Path | `prvs=17102a4352=employee-redacted@asiainsurance[.]com[.]pk` | The `prvs=` prefix is a **sender-rewriting scheme (SRS) signature** applied by an intermediate relay — the bounce-handling address differs slightly from the From header. SRS is used to preserve SPF alignment when forwarding. |
 | Message-ID | `<20231212221233.944A7FB5C3E66D8B@asiainsurance.com.pk>` | Message-ID domain **matches** the sending domain. This is *not* a forged Message-ID (contrast Case 2) — it is a legitimately-issued ID from the compromised server. |
 | Content-Type | `multipart/mixed` | Indicates the message carries an attachment. The `mixed` subtype is the standard choice for messages that have inline body parts *and* a file attachment. |
 | X-Mailer | Not present | Same modern-kit signature as Case 2. The *absence* of `X-Mailer` is the indicator. |
@@ -87,16 +87,15 @@ flowchart LR
 - **Hop 3 (receiving ESP):** `imf29.b.hostedemail.com` — accepted the message from a domain that genuinely sends mail from `210.2.153.132`. SPF passed; DMARC passed; the message was delivered.
 - **Hop 4 (inbox):** `jose@monkey[.]org` — delivered to the recipient.
 
-> **Three compromise models fit the evidence.** The attacker may have (a) **stolen the mailbox credentials** of `younus.shaheen@asiainsurance.com.pk` and used them to submit via the legitimate SMTP submission service; (b) **compromise of the mail server itself** (web shell, scheduled task, etc.), submitting directly from `103.102.57.76`; or (c) **abuse of an open relay / form-to-mail script** on the server. The first two are the most common; the SRS-prefixed Return-Path in this case is consistent with (a) mailbox-credential abuse via an intermediate forwarder.
+> **Three compromise models fit the evidence.** The attacker may have (a) **stolen the mailbox credentials** of `employee-redacted@asiainsurance[.]com[.]pk` and used them to submit via the legitimate SMTP submission service; (b) **compromise of the mail server itself** (web shell, scheduled task, etc.), submitting directly from `103.102.57.76`; or (c) **abuse of an open relay / form-to-mail script** on the server. The first two are the most common; the SRS-prefixed Return-Path in this case is consistent with (a) mailbox-credential abuse via an intermediate forwarder.
 
 ### 3.4 Visual Evidence
 
 | Screenshot | Reference |
 |------------|-----------|
-| Raw Header | `screenshots/01_raw_header.png` |
-| Header Parser Output | `screenshots/02_header_parser.png` |
-| Authentication-Results Block (SPF/DKIM/DMARC) | `screenshots/02b_auth_results.png` |
-| Received Chain (full) | `screenshots/02c_received_chain.png` |
+| Raw Header | `screenshots/case3_01_raw_header.png` |
+| Header Parser Output | `screenshots/case3_02a_header_parser.png` |
+| Header Parser — IOCs | `screenshots/case3_02b_header_parser_iocs.png` |
 
 ---
 
@@ -161,11 +160,7 @@ flowchart TD
 
 | Screenshot | Reference |
 |------------|-----------|
-| Email Body (no URLs) | `screenshots/03_email_body.png` |
-| Attachment Prompt in Mail Client | `screenshots/03b_attachment_prompt.png` |
-| Attachment Rendered (Fake Sign-in) | `screenshots/04_attachment_render.png` |
-| URLScan of Attachment (offline mirror) | `screenshots/04b_urlscan_attachment.png` |
-| SHA256 / VirusTotal of Attachment | `screenshots/04c_vt_attachment.png` |
+| Attachment Content (`OneDrive Doc jose.shtml`) | `screenshots/case3_03_attachment_content.png` |
 
 ---
 
@@ -177,7 +172,7 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 |---|----------|-------|--------|------------|------|
 | 1 | Hash | `450893cb03367159ec00ef2bc0d0fd12bbf4a329b0ef11e7f8dd0e515a5e1fc5` | Attachment SHA256 | High | Phishing login page disguised as a OneDrive document. The hash is the single most durable IOC in this case. |
 | 2 | Attachment | `OneDrive Doc jose.shtml` | Email attachment | High | HTML smuggling — fake Microsoft sign-in page; double-extension (`jose.shtml`); generic MIME (`application/octet-stream`); victim name in filename. |
-| 3 | Email | `younus.shaheen@asiainsurance.com.pk` | From header | High | Compromised legitimate account used to send phishing. **Coordinate with the owning organisation** — the mailbox (or the mail server) is compromised. |
+| 3 | Email | `employee-redacted@asiainsurance[.]com[.]pk` | From header | High | Compromised legitimate account used to send phishing. **Coordinate with the owning organisation** — the mailbox (or the mail server) is compromised. |
 | 4 | Domain | `asiainsurance.com.pk` | From header | Medium | Compromised Pakistan insurance-company domain. The domain itself is a legitimate business; the **account** is the compromise, not the domain registration. |
 | 5 | IP | `210.2.153.132` | Received header (mail.asiainsurance.com.pk) | Medium | Legitimate mail server of `asiainsurance.com.pk`; compromised or abused. |
 | 6 | IP | `103.102.57.76` | Received header (origin hop) | Medium | Attacker's connection IP — `host103-102-57-76.navkarnet.net` (Navkar Net Pvt Ltd, India). Compromised endpoint or direct attacker connection. |
@@ -203,7 +198,7 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 | `asiainsurance.com.pk` | Domain | Likely clean | Clean | The domain is a legitimate company; the *account* is compromised. Do not add the domain to a global blocklist — scope the block to the compromised mailbox / sender. |
 | `210.2.153.132` | IP | Limited coverage | Inconclusive | Legitimate mail server IP; may show abuse if repeatedly used in compromises. |
 | `103.102.57.76` | IP | Limited / contextual coverage | Inconclusive | Attacker endpoint IP. Correlate with AbuseIPDB and any navkarnet.net reports. |
-| `younus.shaheen@asiainsurance.com.pk` | Email | N/A | N/A | The address is a legitimate employee mailbox; the compromise is the issue, not the address itself. |
+| `employee-redacted@asiainsurance[.]com[.]pk` | Email | N/A | N/A | The address is a legitimate employee mailbox; the compromise is the issue, not the address itself. |
 
 ### 6.2 URLScan.io
 
@@ -236,7 +231,7 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 | `210.2.153.132` | Limited / contextual | Legitimate mail server. AbuseIPDB may show reports if the server has been repeatedly abused. |
 | `103.102.57.76` | Contextual | Indian endpoint IP. Correlate with the operator (`navkarnet.net`) for any prior reports. |
 | `asiainsurance.com.pk` | (Domain, not in AbuseIPDB scope) | Use VirusTotal + the spam/abuse feeds the owning organisation subscribes to. |
-| `younus.shaheen@asiainsurance.com.pk` | (Email, not in AbuseIPDB scope) | Use the mail-reputation service of the receiving ESP / corporate mail gateway. |
+| `employee-redacted@asiainsurance[.]com[.]pk` | (Email, not in AbuseIPDB scope) | Use the mail-reputation service of the receiving ESP / corporate mail gateway. |
 
 **Analyst note on reputation interpretation:** Unlike Case 1 (reassignment-confounded) and Case 2 (live-reputation-strong), the reputation story here is **about the *content***, not the *network*. The sending domain is clean; the sending IP is clean; the authentication stack passes; the *attachment hash* is the IOC. This is the case where **hash-based detection is the only durable defence** — the network-level indicators do not flag the message.
 
@@ -255,12 +250,8 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 
 | Screenshot | Reference |
 |------------|-----------|
-| VirusTotal (attachment hash) | `screenshots/05a_virustotal_attachment.png` |
-| VirusTotal (sending domain) | `screenshots/05b_virustotal_domain.png` |
-| WHOIS (asiainsurance.com.pk) | `screenshots/07a_whois_domain.png` |
-| AbuseIPDB (103.102.57.76) | `screenshots/08a_abuseipdb_attacker_endpoint.png` |
-| AbuseIPDB (210.2.153.132) | `screenshots/08b_abuseipdb_mailserver.png` |
-| Sandbox (attachment detonation) | `screenshots/09_sandbox_attachment.png` |
+| VirusTotal (attachment hash) | `screenshots/case3_05_virustotal.png` |
+| AbuseIPDB (mail-server / attacker endpoint) | `screenshots/case3_08_abuseipdb.png` |
 
 ---
 
@@ -270,7 +261,7 @@ All URLs and email addresses below are **defanged** to prevent accidental click-
 
 | Time (UTC / +0530) | Event | Source / Status |
 |--------------------|-------|-----------------|
-| Pre-2023-12-12 | One of three compromise events occurred: (a) `younus.shaheen@asiainsurance.com.pk` mailbox credentials stolen; (b) `mail.asiainsurance.com.pk` server itself compromised; (c) open relay / form-to-mail on `asiainsurance.com.pk` abused. | **Hypothetical — not directly observed, but required for the rest of the timeline.** |
+| Pre-2023-12-12 | One of three compromise events occurred: (a) `employee-redacted@asiainsurance[.]com[.]pk` mailbox credentials stolen; (b) `mail.asiainsurance.com.pk` server itself compromised; (c) open relay / form-to-mail on `asiainsurance.com.pk` abused. | **Hypothetical — not directly observed, but required for the rest of the timeline.** |
 | 2023-12-12 22:36:25 +0530 (= 17:06:25 UTC) | Attacker at `103.102.57.76` (India) submits the message to `mail.asiainsurance.com.pk` (Pakistan) over SMTP. The mail server re-emits the message with its own envelope and Message-ID. | Received chain — **observed**. |
 | 2023-12-12 22:36 +0530 (T0 + seconds) | `mail.asiainsurance.com.pk [210.2.153.132]` delivers the message to `imf29.b.hostedemail.com` with SPF pass + DMARC pass. | Received chain + Authentication-Results — **observed**. |
 | 2023-12-12 (T+ minutes) | `\[H\]` Recipient opens the email, sees the "pending file" subject and the `OneDrive Doc jose.shtml` attachment, opens the attachment. | **Hypothetical — not observed in corpus.** |
@@ -355,7 +346,7 @@ The display name appends the **recipient's domain** to the brand name. Recipient
   - Compromised legitimate sender (not spoofed) — indicates an account-compromise / BEC-adjacent campaign rather than a pure-spoof campaign.
 - **Campaign similarity:** Consistent with the broader 2022–2024 "OneDrive file-sharing" credential-harvest wave. The combination of `.shtml` attachment, generic MIME, real-CDN borrowing, and compromised legitimate sender is a recurring pattern in industry reporting on Microsoft-365-targeted credential phishing.
 - **Attacker infrastructure:**
-  - **Compromised mailbox / server:** `younus.shaheen@asiainsurance.com.pk` on `mail.asiainsurance.com.pk [210.2.153.132]`. The attacker is *using* this infrastructure, not impersonating it.
+  - **Compromised mailbox / server:** `employee-redacted@asiainsurance[.]com[.]pk` on `mail.asiainsurance.com.pk [210.2.153.132]`. The attacker is *using* this infrastructure, not impersonating it.
   - **Attacker endpoint:** `103.102.57.76` (Navkar Net Pvt Ltd, India). This is the IP from which the attacker connected to submit the message.
   - **Compromise model:** Most likely (a) mailbox-credential theft, given the SRS-prefixed Return-Path (consistent with a forwarding / submission chain) and the targeted filename (consistent with a human operator reading mailbox contents). Server-compromise and form-to-mail abuse are possible but less consistent with the observed artefacts.
 
@@ -405,7 +396,7 @@ Apply the following blocks at the **mail gateway, web proxy, DNS level, and EDR*
 ```
 # Sender-specific block (do NOT add the whole domain to a global blocklist
 # without scoping — the domain is a legitimate business, only the mailbox is compromised)
-younus.shaheen@asiainsurance.com.pk
+employee-redacted@asiainsurance[.]com[.]pk
 # Outbound block on asia insurance until the owning organisation confirms remediation
 # (operational decision — coordinate with the third party)
 asiainsurance.com.pk
@@ -432,7 +423,7 @@ OneDrive Doc jose.shtml
 
 ```
 # Block rule — sender mailbox (compromise scope)
-if (sender.address == "younus.shaheen@asiainsurance[.]com.pk")
+if (sender.address == "employee-redacted@asiainsurance[.]com[.]pk")
     -> Quarantine + tag:phish-compromised-sender
 
 # Sender-domain rule (operational decision — see §9.1)
@@ -480,7 +471,7 @@ if (spf.result == "pass" and dkim.result == "none" and dmarc.result == "pass"
 
 - [ ] **Recipient:** If the recipient opened the attachment and entered credentials, **reset the Microsoft password immediately**, remove any unfamiliar MFA factors, review OAuth-consent grants, check inbox rules (auto-forwarding, hide-from-Inbox, move-to-folder), review recent sign-in activity (last 30 days), and reset any other account that reused the same password.
 - [ ] **Compromised third party (`asiainsurance.com.pk`):** **Notify the owning organisation out-of-band** (do not rely on a reply to the phishing email — the mailbox may be fully compromised). Provide the IOCs, the timestamp, and the attachment hash. The owning organisation needs to:
-  - Disable / reset the `younus.shaheen` mailbox.
+  - Disable / reset the `employee-redacted` mailbox.
   - Investigate whether the mail server itself is compromised.
   - Audit outbound mail for further phishing to other recipients.
   - Reset credentials for any other account that may share the same password.
@@ -493,7 +484,7 @@ if (spf.result == "pass" and dkim.result == "none" and dmarc.result == "pass"
 ```spl
 index=email
 | eval sender_lower=lower(sender)
-| where sender_lower="younus.shaheen@asiainsurance[.]com.pk"
+| where sender_lower="employee-redacted@asiainsurance[.]com[.]pk"
    OR match(subject, "(?i)(pending file|file awaiting|review|onedrive).*review")
    OR match(from_display_name, "(?i)onedrive_?@?\\.?monkey\\.org")
    OR match(attachment.filename, "(?i)onedrive.*\\.shtml$")
@@ -515,7 +506,7 @@ index=proxy
 
 ```kql
 EmailEvents
-| where SenderAddress == "younus.shaheen@asiainsurance.com.pk"
+| where SenderAddress == "employee-redacted@asiainsurance[.]com[.]pk"
     or Subject matches regex @"(?i)(pending file|file awaiting).*review"
     or Subject has "pending file awaiting your review"
     or (AuthenticationDetails has "spf=pass" and AuthenticationDetails has "dkim=none" and AuthenticationDetails has "dmarc=pass")
@@ -539,7 +530,7 @@ union isfuzzy=true
 
 ```lucene
 event.category:"email" AND (
-  email.sender.address:"younus.shaheen@asiainsurance.com.pk" OR
+  email.sender.address:"employee-redacted@asiainsurance[.]com[.]pk" OR
   subject:(*pending*file*awaiting*review*) OR
   subject:(*OneDrive*review*) OR
   email.attachment.filename:(*OneDrive*.shtml) OR
@@ -569,7 +560,7 @@ event.category:"email" AND (
 ### A. Raw Email Headers (from Nazario Corpus sample `case3_onedrive.eml`)
 
 ```
-Return-Path: <prvs=17102a4352=younus.shaheen@asiainsurance.com.pk>
+Return-Path: <prvs=17102a4352=employee-redacted@asiainsurance[.]com[.]pk>
 Authentication-Results: imf29.b.hostedemail.com;
         spf=pass (210.2.153.132 is permitted to send mail for asiainsurance.com.pk)
         dkim=none
@@ -581,10 +572,10 @@ Received: from mail.asiainsurance.com.pk ([210.2.153.132])
 Received: from host103-102-57-76.navkarnet.net ([103.102.57.76])
         by mail.asiainsurance.com.pk
         ...
-        for <younus.shaheen@asiainsurance.com.pk>; Tue, 12 Dec 2023 22:36:25 +0530
+        for <employee-redacted@asiainsurance[.]com[.]pk>; Tue, 12 Dec 2023 22:36:25 +0530
 Message-ID: <20231212221233.944A7FB5C3E66D8B@asiainsurance.com.pk>
 Date: Tue, 12 Dec 2023 22:36:25 +0530
-From: "OneDrive_monkey.org" <younus.shaheen@asiainsurance.com.pk>
+From: "OneDrive_monkey.org" <employee-redacted@asiainsurance[.]com[.]pk>
 To: jose@monkey.org
 Subject: You have a pending file awaiting your review 12 Dec 2023
 MIME-Version: 1.0
@@ -652,21 +643,12 @@ DMARC: pass  — SPF aligned with From: asiainsurance.com.pk
 
 | # | File | Description |
 |---|------|-------------|
-| 1 | `screenshots/01_raw_header.png` | Raw email header view in mail client. |
-| 2 | `screenshots/02_header_parser.png` | Google Admin Toolbox / MXToolbox header parser output. |
-| 3 | `screenshots/02b_auth_results.png` | Authentication-Results block (SPF pass / DKIM none / DMARC pass). |
-| 4 | `screenshots/02c_received_chain.png` | Full Received chain (attacker → compromised mail server → receiving ESP). |
-| 5 | `screenshots/03_email_body.png` | Email body rendered in mail client (no URLs in body). |
-| 6 | `screenshots/03b_attachment_prompt.png` | Attachment prompt in mail client (`OneDrive Doc jose.shtml`). |
-| 7 | `screenshots/04_attachment_render.png` | Detonated attachment — fake Microsoft sign-in page. |
-| 8 | `screenshots/04b_urlscan_attachment.png` | URLScan / offline mirror of the attachment HTML. |
-| 9 | `screenshots/04c_vt_attachment.png` | VirusTotal lookup for the attachment SHA256. |
-| 10 | `screenshots/05a_virustotal_attachment.png` | VirusTotal verdict for the attachment. |
-| 11 | `screenshots/05b_virustotal_domain.png` | VirusTotal verdict for the sending domain. |
-| 12 | `screenshots/07a_whois_domain.png` | WHOIS for `asiainsurance.com.pk`. |
-| 13 | `screenshots/08a_abuseipdb_attacker_endpoint.png` | AbuseIPDB lookup for `103.102.57.76`. |
-| 14 | `screenshots/08b_abuseipdb_mailserver.png` | AbuseIPDB lookup for `210.2.153.132`. |
-| 15 | `screenshots/09_sandbox_attachment.png` | Sandbox detonation of the attachment. |
+| 1 | `screenshots/case3_01_raw_header.png` | Raw email header view in mail client. |
+| 2 | `screenshots/case3_02a_header_parser.png` | Google Admin Toolbox / MXToolbox header parser output. |
+| 3 | `screenshots/case3_02b_header_parser_iocs.png` | Header parser — IOCs extracted from header fields (sender, Message-ID, Authentication-Results). |
+| 4 | `screenshots/case3_03_attachment_content.png` | Attachment content (`OneDrive Doc jose.shtml`) — HTML-smuggled fake Microsoft sign-in page. |
+| 5 | `screenshots/case3_05_virustotal.png` | VirusTotal lookup for the attachment SHA256. |
+| 6 | `screenshots/case3_08_abuseipdb.png` | AbuseIPDB lookup for the compromised mail-server IP `210.2.153.132` and the attacker-endpoint IP `103.102.57.76`. |
 
 ### D. References
 
@@ -700,7 +682,7 @@ The three cases represent three structurally different credential-harvesting phi
 | 3 | **Attack vector** | Link in body → raw-IP landing on port 280 | Link in body → typosquatted domain | **HTML attachment smuggling** — `.shtml` file |
 | 4 | **URL type** | Raw IPv4 on non-standard port + IP mirror | Typosquatted domain with `?val=` tracker | **No URLs in body**; assets load from real Microsoft CDN inside the attachment |
 | 5 | **Auth headers** | None — 2005 pre-adoption baseline | SPF `softfail` + DKIM `none` + DMARC `none` | **SPF `pass` + DKIM `none` + DMARC `pass`** (genuine compromised server) |
-| 6 | **Sender model** | **Spoofing** — From claims to be PayPal | **Spoofing** — From claims to be Mail Delivery System at monkey.org | **Account compromise** — From genuinely is `younus.shaheen@asiainsurance.com.pk` |
+| 6 | **Sender model** | **Spoofing** — From claims to be PayPal | **Spoofing** — From claims to be Mail Delivery System at monkey.org | **Account compromise** — From genuinely is `employee-redacted@asiainsurance[.]com[.]pk` |
 | 7 | **Envelope** | From brand → victim | Self-to-self (From = To) | From legitimate compromised third party → victim |
 | 8 | **IOC type focus** | Network (IPs, DNSBLs), header, body typos | Domain (typosquat), IP (AbuseIPDB), URL (tracker) | **Hash (attachment SHA256)**, sender mailbox, MIME-evasion, third-party domain |
 | 9 | **Phishing kit signature** | 2005-era "Rock Phish" / PayPal-spoof kit — `/login.html` on a high port, `X-Mailer: eto bila v.43` | 2020s-era typosquat kit — `.best` TLD, `?val=` tracker, no `X-Mailer` | 2020s-era "bypass-the-link-scanner" kit — `.shtml` smuggling, generic MIME, real-CDN trust-borrowing, targeted filename |
